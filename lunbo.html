@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>轮播组件</title>
+	<style>
+		*{margin:0;padding:0;}
+		ul,li{list-style: none;}
+		#swiper{width:440px;height:220px;overflow:hidden;position: relative;top:100px;left:100px;}
+		ul{height:220px;position:relative;transition:all .4s ease-in-out;top:0;left:0;}
+		ul>li{float: left;}
+		.control{position: absolute;bottom:10px;left:0px;width:100%;height:15px;text-align:center;margin:0 auto;z-index: 100;}
+		.control div{display:inline-block;width:15px;height:15px;border-radius:50%;margin:0px 10px;background-color:#fff;position:relative;top:0;}
+		.control .active{background-color:orange;}
+	</style>
+</head>
+<body>
+	<div id="swiper">
+		<ul>
+			<li><img src="1-440-220.webp" alt=""></li>
+			<li><img src="2-440-220.webp" alt=""></li>
+			<li><img src="3-440-220.webp" alt=""></li>
+			<li><img src="4-440-220.webp" alt=""></li>
+			<li><img src="5-440-220.webp" alt=""></li>
+		</ul>
+		<div class="control"></div>
+	</div>
+	<script>
+	(function(){
+		var swiper =document.getElementById('swiper'),
+			ul     =swiper.children[0],
+		    li     =ul.children,
+		    control=swiper.querySelector(".control"),
+		    toleft =swiper.offsetWidth,
+		    len    =li.length;
+		ul.style.width=toleft*len+"px";
+		var div="";
+		for(var i=0;i<len;i++){
+			div+="<div></div>";
+		}
+		control.innerHTML=div;
+
+		window.swiperIndex=1;
+		var dot=control.querySelectorAll('div');
+		dot[0].setAttribute("class","active");
+		for(var i=0;i<len;i++){
+			dot[i].setAttribute("data-index",i);
+		}
+		li[0].setAttribute("class","swiper-active");
+		var _swiper=function(){
+			window.swiper_control=setInterval(function(){
+				var i=swiperIndex;
+				before_swiper(i);
+				if(swiperIndex<len-1){
+					swiperIndex++;
+				}else{
+					swiperIndex=0;
+					clearInterval(swiper_control);
+					setTimeout(function(){
+						_swiper();
+					},1000);
+				}			
+			},2000);
+		};
+		_swiper();
+		var before_swiper=function(i){
+			ul.style.left="-"+toleft*i+"px";
+			ul.querySelector(".swiper-active").removeAttribute("class");
+			control.querySelector(".active").removeAttribute("class");
+			dot[i].setAttribute("class","active");
+			li[i].setAttribute("class","swiper-active");
+		};
+		swiper.addEventListener("mouseover",function(){			
+			clearInterval(swiper_control);
+		});
+		swiper.addEventListener("mouseout",function(){
+			_swiper();
+		});
+		control.addEventListener("click",function(e){
+			var _this=e.target;
+			if(_this.className=="control" || _this.className=="active"){
+				return false;
+			}
+			if(_this.className==""){
+				var i=swiperIndex=_this.getAttribute("data-index");
+				before_swiper(i);
+				return false;
+			}
+			return false;			
+		});
+	}());
+	</script>
+</body>
+</html>
